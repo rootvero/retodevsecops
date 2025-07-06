@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('1651498Roque')
+    }
+    stages {
+        stage('Clonar Repositorio') {
+            steps {
+                git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/veblarv/node-app.git'
+            }
+        }
+        stage('Ejecutar Pruebas') {
+            steps {
+                sh 'npm install'
+                sh 'npm test'
+            }
+        }
+        stage('Construir Imagen de Docker') {
+            steps {
+                sh 'docker build -t veblarv/node-app:latest .'
+            }
+        }
+        stage('Enviar a Docker Hub') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push veblarv/node-app:latest'
+            }
+        }
+    }
+}
