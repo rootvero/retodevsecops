@@ -1,12 +1,12 @@
 pipeline {
     agent any
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('1651498Roque')
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
     }
     stages {
         stage('Clonar Repositorio') {
             steps {
-                git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/veblarv/node-app.git'
+                git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/rootvero/retodevsecops.git'
             }
         }
         stage('Ejecutar Pruebas') {
@@ -17,13 +17,13 @@ pipeline {
         }
         stage('Construir Imagen de Docker') {
             steps {
-                sh 'docker build -t veblarv/node-app:latest .'
+                sh 'docker build -t veblarv/retodevsecops:latest .'
             }
         }
         stage('Enviar a Docker Hub') {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push veblarv/node-app:latest'
+                sh 'echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin'
+                sh 'docker push veblarv/retodevsecops:latest'
             }
         }
     }
