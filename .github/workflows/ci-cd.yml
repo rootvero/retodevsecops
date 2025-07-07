@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
+    }
+    stages {
+        stage('Clonar Repositorio') {
+            steps {
+                git branch:'main', credentialsId:'github-credentials', url: 'https://github.com/rootvero/retodevsecops.git'      }
+        }
+        stage('Ejecutar Pruebas') {
+            steps {
+                sh 'npm install'
+                sh 'npm test'
+            }
+        }
+        stage('Construir Imagen de Docker') {
+            steps {
+                sh 'docker build -t veblarv/retodevsecops:latest .'
+            }
+        }
+        stage('Enviar a Docker Hub') {
+            steps {
+                sh 'echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin'
+                sh 'docker push veblarv/retodevsecops:latest'
+            }
+        }
+    }
+}
